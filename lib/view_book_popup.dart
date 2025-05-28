@@ -17,10 +17,18 @@ class ViewBookPopup extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  children: const [
-                    Icon(Icons.menu_book, color: Colors.blue, size: 28),
-                    SizedBox(width: 10),
-                    Text(
+                  children: [
+                    // Light blue icon box
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD5E7F0), // Light blue background
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.menu_book, color: Colors.black, size: 24),
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
                       "View Book",
                       style: TextStyle(
                         fontSize: 20,
