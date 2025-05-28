@@ -25,7 +25,7 @@ class ViewUserPopup extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.all(8),
-                      child: const Icon(Icons.menu_book, color: Colors.black, size: 24),
+                      child: const Icon(Icons.supervised_user_circle, color: Colors.black, size: 24),
                     ),
                     const SizedBox(width: 10),
                     const Text(
