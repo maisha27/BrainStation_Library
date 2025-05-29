@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "471924313093",
+    "project_id": "brainstationlibrary",
+    "storage_bucket": "brainstationlibrary.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471924313093:android:7690f2563c5acc7210606c",
+        "android_client_info": {
+          "package_name": "com.example.brainstation_library"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5EJ553Mds0V7rTZTgCoyRXxiuN8K9_Lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

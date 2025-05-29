@@ -1,139 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ResetPassword extends StatefulWidget {
-  const ResetPassword({super.key});
+  final String otp;
+
+  const ResetPassword({super.key, required this.otp});
 
   @override
   State<ResetPassword> createState() => _ResetPasswordState();
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
+
+  bool isLoading = false;
+
+  Future<void> _resetPassword() async {
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (password.isEmpty || confirmPassword.isEmpty) {
+      _showMessage("Please fill in both fields.");
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showMessage("Passwords do not match.");
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://172.16.227.200:8000/auth/reset-password/'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'otp': widget.otp,
+          'new_password': password,
+          'confirm_password': confirmPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        _showMessage("Password reset successfully.");
+        Navigator.popUntil(context, (route) => route.isFirst); // Go back to login
+      } else {
+        final error =
+            jsonDecode(response.body)['detail'] ?? "Failed to reset password.";
+        _showMessage(error);
+      }
+    } catch (e) {
+      _showMessage("Error: $e");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
-        ),
-      ),
+      appBar: AppBar(title: const Text('Reset Password')),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('Asset/images/logo.jpg', height: 100),
-              SizedBox(height: 20),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Reset Password',
-                    style: TextStyle(fontSize: 40, color: Colors.blue),
-                  ),
-                  Text('Please enter your new password'),
-                  SizedBox(height: 20),
-                  Container(
-                    width: 300,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'New Password',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide(color: Colors.lightGreen),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide(color: Colors.lightGreen),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide(
-                                color: Colors.lightGreenAccent,
-                                width: 2.0,
-                              ),
-                            ),
-
-                          ),
-                          obscureText: !_isNewPasswordVisible,
-                        ),
-                        SizedBox(height: 15),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Confirm Password',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide(color: Colors.lightGreen),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide(color: Colors.lightGreen),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide(
-                                color: Colors.lightGreenAccent,
-                                width: 2.0,
-                              ),
-                            ),
-
-                          ),
-                          obscureText: !_isConfirmPasswordVisible,
-                        ),
-                      ],
+              const Text(
+                'Set New Password',
+                style: TextStyle(fontSize: 24, color: Colors.blue),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 300,
+                child: TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'New Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreen,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 ),
-                child: Text(
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 300,
+                child: TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: isLoading ? null : _resetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
+                ),
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
                   'RESET PASSWORD',
                   style: TextStyle(color: Colors.white),
                 ),
-              ),
-              SizedBox(height: 40),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Brain Station 23',
-                    style: TextStyle(fontSize: 24, color: Colors.blue),
-                  ),
-                  Text(
-                    'Library',
-                    style: TextStyle(fontSize: 18, color: Colors.black54),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: 300,
-                    child: Text(
-                      'Your Premier Digital Library for Exploring Technical, Training, and IT Books',
-                      style: TextStyle(fontSize: 14, color: Colors.black87),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
