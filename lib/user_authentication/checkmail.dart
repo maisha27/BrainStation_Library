@@ -1,159 +1,91 @@
 import 'package:flutter/material.dart';
-import 'package:library_management_app/user_authentication/reset_password.dart'; // Import the reset password page
+import 'package:library_management_app/user_authentication/reset_password.dart';
 
-class CheckMail extends StatelessWidget {
+class CheckMail extends StatefulWidget {
   const CheckMail({super.key});
+
+  @override
+  State<CheckMail> createState() => _CheckMailState();
+}
+
+class _CheckMailState extends State<CheckMail> {
+  final TextEditingController _otpController = TextEditingController();
+
+  void _goToResetPassword() {
+    final otp = _otpController.text.trim();
+    if (otp.isEmpty) {
+      _showMessage("OTP cannot be empty");
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResetPassword(otp: otp),
+      ),
+    );
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
-        ),
+        leading: const BackButton(),
       ),
       body: Center(
         child: SingleChildScrollView(
-          // Wrap in SingleChildScrollView
-          padding: const EdgeInsets.all(20.0), // Add padding
+          padding: const EdgeInsets.all(20),
           child: Column(
-            // Change Row to Column
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Center content vertically
-            crossAxisAlignment:
-                CrossAxisAlignment.center, // Center content horizontally
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Add the logo at the top
-              Image.asset(
-                'Asset/images/logo.jpg', // Assuming the logo is here
-                height: 100,
+              Image.asset('Asset/images/logo.jpg', height: 100),
+              const SizedBox(height: 20),
+              const Text('Check your Mailbox', style: TextStyle(fontSize: 40, color: Colors.blue)),
+              const Text('Please enter the OTP to proceed'),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 300,
+                child: TextFormField(
+                  controller: _otpController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'OTP',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: const BorderSide(color: Colors.lightGreen),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: const BorderSide(color: Colors.lightGreenAccent, width: 2),
+                    ),
+                  ),
+                ),
               ),
-              SizedBox(height: 20), // Spacing below the logo
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Center elements horizontally
-                children: [
-                  Text(
-                    'Check your Mailbox',
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Colors.blue,
-                    ), // Adjust font size for mobile
-                  ),
-                  Text('Please enter the OTP to proceed'),
-                  SizedBox(height: 20), // Add some spacing
-                  Container(
-                    width: 300, // Set a fixed width for the input field
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'OTP',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide(color: Colors.lightGreen),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide(color: Colors.lightGreen),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide(
-                            color: Colors.lightGreenAccent,
-                            width: 2.0,
-                          ),
-                        ),
-                      ),
-                      keyboardType:
-                          TextInputType.number, // Set keyboard type to number
-                    ),
-                  ),
-                  SizedBox(height: 20), // Spacing before button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate to the Reset Password page with a custom animation
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const ResetPassword(),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                                const begin = Offset(
-                                  1.0,
-                                  0.0,
-                                ); // Start from the right
-                                const end = Offset.zero; // End at the center
-                                const curve =
-                                    Curves.ease; // Smooth animation curve
-
-                                var tween = Tween(
-                                  begin: begin,
-                                  end: end,
-                                ).chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightGreen,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 15,
-                      ),
-                    ),
-                    child: Text(
-                      'VERIFY',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _goToResetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.lightGreen,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                ),
+                child: const Text('VERIFY', style: TextStyle(color: Colors.white)),
               ),
-
-              SizedBox(height: 40), // Spacing between sections
-              // Right side: Brain Station 23 Info (now bottom section)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Center elements horizontally
-                children: [
-                  // Need to add the top-right blue logo if available
-                  Text(
-                    'Brain Station 23',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.blue,
-                    ), // Adjust font size
-                  ),
-                  Text(
-                    'Library',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black54,
-                    ), // Adjust font size
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: 300,
-                    child: Text(
-                      'Your Premier Digital Library for Exploring Technical, Training, and IT Books',
-                      style: TextStyle(fontSize: 14, color: Colors.black87),
-                      textAlign: TextAlign.center, // Center text
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 40),
+              const Text('Brain Station 23', style: TextStyle(fontSize: 24, color: Colors.blue)),
+              const Text('Library', style: TextStyle(fontSize: 18, color: Colors.black54)),
+              const SizedBox(height: 10),
+              const SizedBox(
+                width: 300,
+                child: Text(
+                  'Your Premier Digital Library for Exploring Technical, Training, and IT Books',
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),
