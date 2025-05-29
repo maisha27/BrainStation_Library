@@ -36,7 +36,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
     try {
       final response = await http.post(
-        Uri.parse('http:http://172.16.227.200:8000/auth/reset-password/'),
+        Uri.parse('http://172.16.227.200:8000/auth/reset-password/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'otp': widget.otp,
